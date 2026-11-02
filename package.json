@@ -1,0 +1,12 @@
+{
+  "name": "speed-car-radmin-racing",
+  "version": "1.0.0",
+  "description": "1-6 Players Real-time Drift Racing Game over Radmin VPN",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "three": "^0.160.0"
+  }
+}

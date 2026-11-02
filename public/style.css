@@ -1,0 +1,674 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+}
+
+body, html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #020204;
+  color: #e2e8f0;
+}
+
+/* ========================================================================== */
+/* 1. DARK CYBERPUNK MAIN MENU SCREEN                                         */
+/* ========================================================================== */
+#mainMenuScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 45%, #0b0d13 0%, #030305 75%, #000000 100%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#mainMenuScreen.fade-out {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.04);
+}
+
+.menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.menu-box {
+  position: relative;
+  width: min(490px, 92vw);
+  background: rgba(10, 11, 15, 0.88);
+  backdrop-filter: blur(28px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 42px 36px;
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.game-badge {
+  display: inline-block;
+  background: rgba(225, 29, 72, 0.15);
+  border: 1px solid rgba(225, 29, 72, 0.4);
+  color: #fb7185;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  padding: 4px 14px;
+  border-radius: 99px;
+  margin-bottom: 16px;
+  text-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
+}
+
+.game-title {
+  font-size: clamp(38px, 6vw, 54px);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 2px;
+  color: #ffffff;
+  line-height: 1.05;
+  text-shadow: 0 4px 25px rgba(0, 0, 0, 0.9);
+}
+
+.game-title span {
+  color: #38bdf8;
+  text-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+}
+
+.game-tagline {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: #64748b;
+  margin-top: 8px;
+  margin-bottom: 34px;
+}
+
+.menu-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-bottom: 24px;
+}
+
+.btn-menu-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+  border: 1px solid rgba(56, 189, 248, 0.5);
+  padding: 16px 24px;
+  font-size: 19px;
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 1px;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(2, 132, 199, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
+}
+
+.btn-menu-primary:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.15);
+  box-shadow: 0 14px 38px rgba(2, 132, 199, 0.5);
+}
+
+.btn-menu-secondary {
+  background: rgba(18, 20, 29, 0.85);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 800;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-menu-secondary:hover {
+  background: rgba(28, 32, 45, 0.95);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.menu-radmin-info {
+  background: rgba(4, 5, 8, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.menu-radmin-info code {
+  color: #38bdf8;
+  font-weight: 700;
+  font-family: Consolas, monospace;
+}
+
+.menu-radmin-info button {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.menu-radmin-info button:hover {
+  background: #0284c7;
+  color: #fff;
+}
+
+/* ========================================================================== */
+/* 2. DARK SETTINGS MODAL                                                     */
+/* ========================================================================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-box {
+  width: min(470px, 92vw);
+  background: #0b0d13;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 24px 28px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.95);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 14px;
+  margin-bottom: 18px;
+}
+
+.modal-header h2 {
+  font-size: 17px;
+  font-weight: 900;
+  color: #f1f5f9;
+  letter-spacing: 0.5px;
+}
+
+.btn-close-modal {
+  background: transparent;
+  color: #64748b;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.btn-close-modal:hover {
+  color: #fff;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-item label, .setting-item-toggle label {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.setting-item-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.setting-item-toggle .toggle-btn {
+  background: rgba(18, 20, 28, 0.9);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.setting-item-toggle .toggle-btn:hover {
+  background: #0284c7;
+  color: #fff;
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+}
+
+#playerNameInput {
+  flex: 1;
+  background: #040508;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  outline: none;
+}
+
+#playerNameInput:focus {
+  border-color: #38bdf8;
+}
+
+#saveProfileBtn {
+  background: #1e2230;
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0 16px;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#saveProfileBtn:hover {
+  background: #282e42;
+  color: #fff;
+}
+
+.color-picker {
+  display: flex;
+  gap: 10px;
+}
+
+.color-dot {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-dot.active {
+  border-color: #ffffff;
+  transform: scale(1.18);
+  box-shadow: 0 0 14px currentColor;
+}
+
+#lapSelect {
+  background: #040508;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.controls-hint p {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+kbd {
+  background: #151822;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 10.5px;
+  font-family: Consolas, monospace;
+  color: #38bdf8;
+}
+
+.modal-footer {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-modal-save {
+  background: #0284c7;
+  color: #fff;
+  border: none;
+  padding: 9px 22px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-modal-save:hover {
+  background: #0369a1;
+}
+
+/* ========================================================================== */
+/* 3. IN-GAME DARK MINIMAL HUD                                                */
+/* ========================================================================== */
+#canvasContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+#fxCanvas {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+#topHud {
+  position: fixed;
+  top: 12px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.hud-glass {
+  pointer-events: auto;
+  background: rgba(6, 8, 12, 0.85);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+#btnOpenMenuIngame {
+  background: rgba(255, 255, 255, 0.05);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 5px 12px;
+  border-radius: 7px;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#btnOpenMenuIngame:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
+.btn-race-trigger {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.btn-bot-trigger {
+  background: rgba(30, 41, 59, 0.85);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.stats-pill {
+  gap: 16px;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.stat-block small {
+  font-size: 9px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.stat-block span {
+  color: #f1f5f9;
+  font-family: Consolas, monospace;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+/* Turn Navigator HUD */
+#navHud {
+  position: fixed;
+  top: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 22;
+}
+
+.turn-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 18px;
+  border-radius: 12px;
+  background: rgba(6, 8, 12, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.turn-card.medium { border-color: #eab308; }
+.turn-card.sharp { border-color: #f43f5e; box-shadow: 0 0 20px rgba(244, 63, 94, 0.5); }
+
+.turn-icon { font-size: 22px; font-weight: 900; }
+#turnTitle { font-size: 12.5px; font-weight: 800; letter-spacing: 0.5px; }
+
+#wrongWayBanner {
+  background: #dc2626;
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  padding: 6px 18px;
+  border-radius: 99px;
+  animation: blink 0.4s infinite alternate;
+}
+
+@keyframes blink {
+  from { transform: scale(1); }
+  to { transform: scale(1.05); }
+}
+
+/* Drift Banner */
+#driftBanner {
+  position: fixed;
+  top: 130px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 25;
+  pointer-events: none;
+  background: rgba(10, 11, 16, 0.92);
+  border: 1px solid #f97316;
+  box-shadow: 0 0 25px rgba(249, 115, 22, 0.4);
+  padding: 6px 22px;
+  border-radius: 99px;
+}
+
+.drift-title { font-size: 10px; font-weight: 900; color: #fb923c; }
+#driftPoints { font-size: 22px; font-weight: 900; font-style: italic; color: #ffffff; }
+
+#centerOverlay {
+  position: fixed;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 30;
+  background: rgba(6, 8, 12, 0.95);
+  padding: 26px 54px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.9);
+}
+
+#countdownText {
+  font-size: 78px;
+  font-weight: 900;
+  font-style: italic;
+  color: #38bdf8;
+  text-shadow: 0 0 30px rgba(56, 189, 248, 0.6);
+}
+
+#subOverlayText {
+  font-size: 16px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+
+/* Radar & Tachometer */
+#radarWrap {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  background: rgba(6, 8, 12, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 6px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+#nfsHud {
+  position: fixed;
+  bottom: 16px;
+  right: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.nos-container {
+  width: 200px;
+  background: rgba(6, 8, 12, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+.nos-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10.5px;
+  font-weight: 900;
+  color: #38bdf8;
+  margin-bottom: 4px;
+}
+
+.nos-bar-bg {
+  width: 100%;
+  height: 9px;
+  background: #020204;
+  border-radius: 99px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+#nitroFill {
+  height: 100%;
+  background: linear-gradient(90deg, #0284c7, #38bdf8);
+  transition: width 0.06s linear;
+}
+
+.tacho-card {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, rgba(14, 16, 22, 0.96) 0%, rgba(4, 5, 8, 0.98) 80%);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+}
+
+#tachoCanvas { position: absolute; inset: 0; }
+
+.tacho-readout {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+#gearBox {
+  display: inline-block;
+  background: #e11d48;
+  color: #fff;
+  font-weight: 900;
+  font-size: 13px;
+  padding: 1px 7px;
+  border-radius: 4px;
+}
+
+#speedVal {
+  font-size: 38px;
+  font-weight: 900;
+  font-family: Consolas, monospace;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.unit {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #64748b;
+}
+
+.hidden {
+  display: none !important;
+}

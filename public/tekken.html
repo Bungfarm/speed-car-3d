@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IRON FIST 8: CYBER TEKKEN 3D (Radmin VPN &amp; Arcade Fighting)</title>
+  <link rel="stylesheet" href="tekken.css">
+</head>
+<body>
+  <!-- ==================================================================== -->
+  <!-- 3D WEBGL ARENA & HIT-SPARK / LIGHTNING VFX CANVAS                     -->
+  <!-- ==================================================================== -->
+  <div id="arenaContainer"></div>
+  <canvas id="vfxCanvas"></canvas>
+
+  <!-- CINEMATIC RAGE ART / KO FLASH OVERLAY -->
+  <div id="cinematicFlash" class="hidden"></div>
+
+  <!-- ==================================================================== -->
+  <!-- TOP NAVIGATION BAR (SWITCH GAME, RADMIN LINK, CHARACTER SELECT)      -->
+  <!-- ==================================================================== -->
+  <header id="topNavBar">
+    <div class="nav-left">
+      <a href="/index.html" class="back-racing-btn" title="กลับไปหน้าเกมแข่งรถดริฟต์ 3D">🏎️ สลับไปเกมแข่งรถ SPEED CAR</a>
+      <button id="openSelectBtn" type="button" class="nav-action-btn">🥊 เลือกนักสู้ &amp; ด่าน (SELECT)</button>
+      <button id="toggleMoveListBtn" type="button" class="nav-action-btn">📜 ตารางท่าคอมโบ (MOVELIST)</button>
+    </div>
+
+    <div class="nav-center" id="radminCopyBox" title="คลิกเพื่อคัดลอกลิงก์ส่งให้เพื่อนใน Radmin VPN มาสู้กัน!">
+      <span class="radmin-tag">RADMIN P2P/LAN:</span>
+      <code id="tkShareUrl">http://localhost:3000/tekken.html</code>
+      <button id="tkCopyBtn" type="button">คัดลอกลิงก์ท้าดวล</button>
+    </div>
+
+    <div class="nav-right">
+      <div class="mode-pill" id="currentModeBadge">🤖 VS AI CPU</div>
+      <button id="rematchBtn" type="button" class="nav-action-btn accent">🔄 รีเซ็ตยกใหม่ (R)</button>
+      <button id="soundToggleBtn" type="button" class="nav-action-btn">🔊 เสียง: เปิด</button>
+    </div>
+  </header>
+
+  <!-- ==================================================================== -->
+  <!-- TEKKEN 8 STYLE FIGHTING HUD (HEALTH BARS, HEAT, RAGE, TIMER, ROUNDS) -->
+  <!-- ==================================================================== -->
+  <div id="fightHud">
+    <!-- PLAYER 1 SIDE (LEFT) -->
+    <div class="fighter-hud p1-side">
+      <div class="portrait-frame" id="p1PortraitBox">
+        <div class="portrait-glow" id="p1PortraitGlow"></div>
+        <span class="fighter-icon" id="p1Icon">⚡</span>
+      </div>
+      <div class="bars-column">
+        <div class="name-row">
+          <span class="fighter-name" id="p1Name">JIN KAZAMA</span>
+          <span class="fighter-style" id="p1Style">DEVIL KARATE</span>
+          <span class="rage-badge hidden" id="p1RageBadge">🔥 RAGE READY (PRESS L)</span>
+        </div>
+        <div class="hp-bar-outer">
+          <div class="hp-damage-trail" id="p1HpTrail" style="width: 100%;"></div>
+          <div class="hp-bar-fill" id="p1HpFill" style="width: 100%;"></div>
+        </div>
+        <div class="sub-row">
+          <div class="heat-bar-outer" title="เกจ HEAT / พลังปราณ (กด K เพื่อระเบิดพลัง)">
+            <div class="heat-bar-fill" id="p1HeatFill" style="width: 100%;"></div>
+            <span class="heat-label">⚡ HEAT ENGAGER</span>
+          </div>
+          <div class="round-orbs" id="p1Orbs">
+            <span class="orb"></span>
+            <span class="orb"></span>
+            <span class="orb"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CENTER TIMER & ROUND INDICATOR -->
+    <div class="center-timer-box">
+      <div class="round-label" id="roundLabel">ROUND 1</div>
+      <div class="timer-digits" id="timerDigits">60</div>
+      <div class="stage-label" id="hudStageName">VOLCANIC DEVIL DOJO</div>
+    </div>
+
+    <!-- PLAYER 2 SIDE (RIGHT) -->
+    <div class="fighter-hud p2-side">
+      <div class="bars-column">
+        <div class="name-row">
+          <span class="rage-badge hidden" id="p2RageBadge">🔥 RAGE READY</span>
+          <span class="fighter-style" id="p2Style">MISHIMA THUNDER</span>
+          <span class="fighter-name" id="p2Name">KAZUYA MISHIMA</span>
+        </div>
+        <div class="hp-bar-outer">
+          <div class="hp-damage-trail" id="p2HpTrail" style="width: 100%;"></div>
+          <div class="hp-bar-fill" id="p2HpFill" style="width: 100%;"></div>
+        </div>
+        <div class="sub-row">
+          <div class="round-orbs" id="p2Orbs">
+            <span class="orb"></span>
+            <span class="orb"></span>
+            <span class="orb"></span>
+          </div>
+          <div class="heat-bar-outer">
+            <div class="heat-bar-fill" id="p2HeatFill" style="width: 100%;"></div>
+            <span class="heat-label">⚡ HEAT ENGAGER</span>
+          </div>
+        </div>
+      </div>
+      <div class="portrait-frame" id="p2PortraitBox">
+        <div class="portrait-glow" id="p2PortraitGlow"></div>
+        <span class="fighter-icon" id="p2Icon">😈</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- DYNAMIC COMBO COUNTER & HIT DAMAGE CALLOUTS                          -->
+  <!-- ==================================================================== -->
+  <div id="p1ComboBox" class="combo-banner left hidden">
+    <div class="combo-hits"><span id="p1ComboNum">3</span> HITS</div>
+    <div class="combo-dmg" id="p1ComboDmg">48 DMG • JUGGLE!</div>
+    <div class="combo-move" id="p1MoveName">⚡ ELECTRIC WIND GOD FIST</div>
+  </div>
+
+  <div id="p2ComboBox" class="combo-banner right hidden">
+    <div class="combo-hits"><span id="p2ComboNum">2</span> HITS</div>
+    <div class="combo-dmg" id="p2ComboDmg">32 DMG</div>
+    <div class="combo-move" id="p2MoveName">🔥 DEMON UPPERCUT</div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- CENTER ANNOUNCER BANNER (GET READY FOR THE NEXT BATTLE / FIGHT / KO) -->
+  <!-- ==================================================================== -->
+  <div id="announcerOverlay" class="hidden">
+    <div class="announcer-sub" id="announcerSub">GET READY FOR THE NEXT BATTLE</div>
+    <div class="announcer-main" id="announcerMain">ROUND 1</div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- FLOATING MOVELIST & CONTROLS GUIDE (BOTTOM LEFT / TOGGLEABLE)        -->
+  <!-- ==================================================================== -->
+  <aside id="moveListPanel">
+    <div class="movelist-header">
+      <h3>🥊 ท่าโจมตี &amp; คอมโบ (TEKKEN 4-LIMB SYSTEM)</h3>
+      <button id="closeMoveListBtn" type="button">✕</button>
+    </div>
+
+    <div class="control-columns">
+      <div class="ctrl-col">
+        <h4>🎮 ผู้เล่น 1 (P1 KEYBOARD)</h4>
+        <ul>
+          <li><kbd>A</kbd> / <kbd>D</kbd> : เดินหน้า / ถอยหลัง (<strong>ถอยหลังค้าง = ตั้งการ์ดบล็อก</strong>)</li>
+          <li><kbd>W</kbd> : กระโดด | <kbd>S</kbd> : ก้มหลบหมัดสูง (High Evade)</li>
+          <li><kbd>A</kbd><kbd>A</kbd> หรือ <kbd>D</kbd><kbd>D</kbd> : พุ่งตัวไว (Wave Dash / Backdash)</li>
+          <li><kbd>U</kbd> : <strong>หมัดซ้ายไว (Left Jab)</strong> — กดรัว <kbd>U</kbd><kbd>U</kbd><kbd>I</kbd> ต่อคอมโบ</li>
+          <li><kbd>I</kbd> : <strong>หมัดขวาหนัก (Heavy Fist)</strong></li>
+          <li><kbd>S</kbd> + <kbd>I</kbd> : <strong>⚡ ท่าเสยลอยฟ้า (Electric Uppercut Launcher!)</strong></li>
+          <li><kbd>J</kbd> : <strong>เตะซ้ายเร็ว (Quick Kick)</strong> | <kbd>S</kbd>+<kbd>J</kbd> : <strong>เตะกวาดขา (Low Sweep)</strong></li>
+          <li><kbd>K</kbd> : <strong>🌪️ เตะหมุนไซโคลน / ท่าไม้ตายประจำตัว (Tornado Kick)</strong></li>
+          <li><kbd>U</kbd>+<kbd>J</kbd> (หรือ <kbd>H</kbd>) : <strong>🤸 ท่าทุ่ม (Grapple Throw - ทะลุการ์ด!)</strong></li>
+          <li><kbd>L</kbd> : <strong>💥 RAGE ART / HEAT SMASH (ท่าไม้ตายซูมกล้องคัตซีน!)</strong></li>
+        </ul>
+      </div>
+
+      <div class="ctrl-col" id="p2ControlGuide">
+        <h4>🎮 ผู้เล่น 2 (2P คีย์บอร์ดเดียวกัน / RADMIN)</h4>
+        <ul>
+          <li><kbd>←</kbd> / <kbd>→</kbd> : เดิน / ถอยตั้งการ์ด | <kbd>↑</kbd> กระโดด | <kbd>↓</kbd> ย่อหลบ</li>
+          <li><kbd>Numpad 4</kbd> (หรือ <kbd>1</kbd>) : หมัดซ้าย | <kbd>Numpad 5</kbd> (หรือ <kbd>2</kbd>) : หมัดขวา/เสย</li>
+          <li><kbd>Numpad 1</kbd> (หรือ <kbd>3</kbd>) : เตะซ้าย | <kbd>Numpad 2</kbd> (หรือ <kbd>4</kbd>) : เตะหนัก</li>
+          <li><kbd>Numpad 6</kbd> (หรือ <kbd>0</kbd>) : <strong>💥 RAGE ART ท่าไม้ตายใหญ่!</strong></li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ==================================================================== -->
+  <!-- CHARACTER & STAGE SELECT MODAL (THE KING OF IRON FIST TOURNAMENT 8)  -->
+  <!-- ==================================================================== -->
+  <div id="selectModal">
+    <div class="select-backdrop"></div>
+    <div class="select-container">
+      <div class="tournament-header">
+        <div class="tk-subtitle">THE KING OF IRON FIST TOURNAMENT • 3D NEXT-GEN WEBGL</div>
+        <h1 class="tk-title">IRON FIST <span>TEKKEN 3D</span></h1>
+      </div>
+
+      <!-- GAME MODE TABS -->
+      <div class="mode-selector-bar">
+        <button type="button" class="mode-tab active" data-mode="ai">🤖 ดวลกับบอท AI อัจฉริยะ (ARCADE VS CPU)</button>
+        <button type="button" class="mode-tab" data-mode="local2p">👥 เล่น 2 คนเครื่องเดียวกัน (2P LOCAL VERSUS)</button>
+        <button type="button" class="mode-tab" data-mode="radmin">🌐 ดวลออนไลน์ผ่าน Radmin VPN (LAN MULTIPLAYER)</button>
+      </div>
+
+      <!-- AI DIFFICULTY OR RADMIN LOBBY BAR -->
+      <div id="subModeConfig" class="sub-mode-box">
+        <div id="aiConfigRow" class="config-row">
+          <span>ระดับความโหดของ AI:</span>
+          <button type="button" class="diff-btn" data-diff="0.45">🟢 ง่าย (ROOKIE)</button>
+          <button type="button" class="diff-btn active" data-diff="0.78">🟡 มาตรฐาน (WARRIOR)</button>
+          <button type="button" class="diff-btn" data-diff="1.0">🔴 โหดนรกแตก (TEKKEN GOD)</button>
+        </div>
+
+        <div id="radminLobbyRow" class="config-row hidden">
+          <span>ชื่อนักสู้ของคุณ:</span>
+          <input type="text" id="tkPlayerNameInput" maxlength="16" placeholder="ตั้งชื่อนักสู้..." value="IronFighter" />
+          <span class="lobby-online-pill">ผู้เล่นในห้อง Radmin: <strong id="tkOnlineCount">1</strong> คน</span>
+          <div id="tkOnlinePlayersList" class="online-chips"></div>
+        </div>
+      </div>
+
+      <!-- CHARACTER ROSTER (6 ICONIC TEKKEN ARCHETYPES) -->
+      <div class="select-section-title">เลือกนักสู้ของคุณ (คลิกซ้าย = เลือก P1 | คลิกขวา หรือปุ่มสลับ = เลือกคู่ต่อสู้ P2)</div>
+      <div class="pick-target-toggle">
+        <button type="button" id="pickP1Btn" class="pick-target-btn active">กำลังเลือกตัวละครฝั่ง P1 (สีฟ้า)</button>
+        <button type="button" id="pickP2Btn" class="pick-target-btn">กำลังเลือกตัวละครฝั่ง P2 / AI (สีแดง)</button>
+      </div>
+
+      <div class="roster-grid" id="rosterGrid">
+        <!-- Populated by tekken.js -->
+      </div>
+
+      <!-- STAGE SELECTOR (3 NEXT-GEN 3D ARENAS) -->
+      <div class="select-section-title">เลือกสังเวียนประลอง 3D (INTERACTIVE NEXT-GEN STAGES)</div>
+      <div class="stage-grid" id="stageGrid">
+        <!-- Populated by tekken.js -->
+      </div>
+
+      <div class="launch-footer">
+        <button type="button" id="startBattleBtn" class="launch-battle-btn">
+          🔥 เข้าสู่สังเวียนเดือด! (START IRON FIST BATTLE)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="three.min.js"></script>
+  <script src="tekken.js"></script>
+</body>
+</html>
